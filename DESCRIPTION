@@ -1,0 +1,11 @@
+Package: shinyaframe
+Type: Package
+Title: An R interface to WebVR via Shiny and Mozilla A-Frame.
+Version: 0.1.0.9000
+Authors@R: person("William", "Murphy", email = "william.murphy.rd@gmail.com",
+                  role = c("cre"))
+Description: Provides widgets to interface between Shiny and A-Frame, allowing
+data from R to be rendered in virtual reality. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
