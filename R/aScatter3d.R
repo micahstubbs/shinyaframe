@@ -1,3 +1,4 @@
+#' @include utils.R
 #' <Add Title>
 #'
 #' <Add Description>
@@ -57,6 +58,4 @@ renderAScatter3d <- function(expr, env = parent.frame(), quoted = FALSE) {
 }
 
 #' @export
-aScatter3d_html <- function(id, style, class, ...) {
-  atags$entity(id = id, style = style, class = class, ...)
-}
+aScatter3d_html <- aEntity_html

@@ -5,8 +5,15 @@ Version: 0.1.0.9000
 Authors@R: person("William", "Murphy", email = "william.murphy.rd@gmail.com",
                   role = c("cre"))
 Description: Provides widgets to interface between Shiny and A-Frame, allowing
-    data from R to be rendered in virtual reality. 
+    data from R to be rendered in virtual reality.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Depends: shiny
+Depends:
+    shiny
+Collate:
+    'utils.R'
+    'aDataFrame.R'
+    'aScatter3d.R'
+    'aframeTags.R'
+RoxygenNote: 5.0.1

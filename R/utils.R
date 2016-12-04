@@ -17,3 +17,8 @@ make_geometry <- function(g, s) {
   }
   paste0(prim, sv[matrix(c(seq_along(s), match(g, names(sv))), ncol = 2)])
 }
+
+
+aEntity_html <- function(id, style, class, ...) {
+  atags$entity(id = id, style = style, class = class, ...)
+}
