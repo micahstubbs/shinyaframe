@@ -6,15 +6,31 @@
 #' @import htmlwidgets
 #'
 #' @export
-aScatter3d <- function(message, width = NULL, height = NULL, elementId = NULL) {
-
+aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
+  if(!is(ggobj, "gg")) stop("aScatter3d requires a ggplot object")
+  build <- ggplot_build(ggobj)
+  # scaled data
+  build_dat <- build$data[[1]]
+  # limits, breaks, and labels
+  scales <- build$layout$panel_ranges[[1]]
+  # fill in gaps for third dimension
+  scales$z.range = c(min(build_dat$z, na.rm = TRUE) * .95,
+                     max(build_dat$z, na.rm = TRUE) * 1.05)
+  # scale to the aframe plot area
+  x <- scales::rescale(build_dat$x,
+                       from = scales$x.range, to = c(-0.25, 0.25))
+  y <- scales::rescale(build_dat$y,
+                       from = scales$y.range, to = c(-0.25, 0.25))
+  z <- scales::rescale(build_dat$z,
+                       from = scales$z.range, to = c(-0.25, 0.25));
   # forward plot data using x
   x = list(
-    coords = paste(message$x, message$y, message$z),
-    parentTheme = message$parentTheme,
-    geometry = make_geometry(message$geom %||% "sphere",
-                             message$size %||% ".01"),
-    material = paste0("color: ", message$color %||% "yellow")
+    x = x,
+    y = y,
+    z = z,
+    geometry = make_geometry(build_dat$shape,
+                             build_dat$size / 150),
+    material = paste0("color: ", build_dat$colour)
   )
 
   # create widget
