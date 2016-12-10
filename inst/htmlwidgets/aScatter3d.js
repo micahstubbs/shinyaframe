@@ -18,6 +18,15 @@ HTMLWidgets.widget({
           geometry: x.geometry,
           material: x.material
         });
+        mappingUpdate = function(evt) {
+          message = {
+            plot: el.id,
+            variable: evt.detail.dropped.components["data-frame-column"].data.name,
+            mapping: evt.detail.on.axis
+          };
+          Shiny.onInputChange("mappings", message);
+        };
+        el.parentEl.addEventListener('dropped', mappingUpdate);
       }
     };
   }
