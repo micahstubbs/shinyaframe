@@ -19,20 +19,8 @@ HTMLWidgets.widget({
           el.setAttribute("data-frame", "");
           setup = true;
         }
-        function addcol(y) {
-          var col = document.createElement("a-entity");
-          col.setAttribute("data-frame-column", y);
+        el.components["data-frame"].updateData(x);
 
-           // "data: ".concat(JSON.stringify(y.coldat),
-            //"; name: ", y.name, "; type: ", y.type));
-          el.appendChild(col);
-        }
-
-        if(Array.isArray(x)) {
-          x.forEach(addcol);
-        } else {
-          addcol(x);
-        }
       },
 
       resize: function(width, height) {
