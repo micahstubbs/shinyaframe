@@ -13,16 +13,24 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   build_dat <- build$data[[1]]
   # limits, breaks, and labels
   scales <- build$layout$panel_ranges[[1]]
+  # todo: add z scale
+  # inefficient hack: rebuild the plot with z in place of x
+  buildz <- ggplot_build(ggobj + ggplot2::aes_(x = ggobj$mapping$z))
+  scales$z.range <- buildz$layout$panel_ranges[[1]]$x.range
+  scales$z.labels <- buildz$layout$panel_ranges[[1]]$x.labels
+  scales$z.major <-  buildz$layout$panel_ranges[[1]]$x.major
+  # todo: make target scale mutable
+  toscale <- c(-0.25, 0.25)
   # fill in gaps for third dimension
   scales$z.range = c(min(build_dat$z, na.rm = TRUE) * .95,
                      max(build_dat$z, na.rm = TRUE) * 1.05)
   # scale to the aframe plot area
   x <- scales::rescale(build_dat$x,
-                       from = scales$x.range, to = c(-0.25, 0.25))
+                       from = scales$x.range, to = toscale)
   y <- scales::rescale(build_dat$y,
-                       from = scales$y.range, to = c(-0.25, 0.25))
+                       from = scales$y.range, to = toscale)
   z <- scales::rescale(build_dat$z,
-                       from = scales$z.range, to = c(-0.25, 0.25));
+                       from = scales$z.range, to = toscale);
   # forward plot data using x
   x = list(
     x = x,
@@ -30,7 +38,13 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     z = z,
     geometry = make_geometry(build_dat$shape,
                              build_dat$size / 150),
-    material = paste0("color: ", build_dat$colour)
+    material = paste0("color: ", build_dat$colour),
+    xlabels = scales$x.labels,
+    xbreaks = scales::rescale(scales$x.major, from = c(0, 1), to = toscale),
+    ylabels = scales$y.labels,
+    ybreaks = scales::rescale(scales$y.major, from = c(0, 1), to = toscale),
+    zlabels = scales$z.labels,
+    zbreaks = scales::rescale(scales$z.major, from = c(0, 1), to = toscale)
   )
 
   # create widget

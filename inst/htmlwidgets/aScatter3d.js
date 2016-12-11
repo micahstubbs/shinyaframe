@@ -16,7 +16,13 @@ HTMLWidgets.widget({
           y: x.y,
           z: x.z,
           geometry: x.geometry,
-          material: x.material
+          material: x.material,
+          xlabels: x.xlabels,
+          xbreaks: x.xbreaks,
+          ylabels: x.ylabels,
+          ybreaks: x.ybreaks,
+          zlabels: x.zlabels,
+          zbreaks: x.zbreaks
         });
         mappingUpdate = function(evt) {
           message = {
