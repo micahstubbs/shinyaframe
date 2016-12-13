@@ -21,24 +21,21 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   scales$z.major <-  buildz$layout$panel_ranges[[1]]$x.major
   # todo: make target scale mutable
   toscale <- c(-0.25, 0.25)
-  # fill in gaps for third dimension
-  scales$z.range = c(min(build_dat$z, na.rm = TRUE) * .95,
-                     max(build_dat$z, na.rm = TRUE) * 1.05)
   # scale to the aframe plot area
-  x <- scales::rescale(build_dat$x,
+  build_dat$x <- scales::rescale(build_dat$x,
                        from = scales$x.range, to = toscale)
-  y <- scales::rescale(build_dat$y,
+  build_dat$y <- scales::rescale(build_dat$y,
                        from = scales$y.range, to = toscale)
-  z <- scales::rescale(build_dat$z,
+  build_dat$z <- scales::rescale(build_dat$z,
                        from = scales$z.range, to = toscale);
+  build_dat$geometry <- make_geometry(build_dat$shape,
+                                      build_dat$size / 150)
+  build_dat$material <- paste0("color: ", build_dat$colour)
+  build_dat <- build_dat[ , c("x", "y", "z", "geometry", "material")]
+
   # forward plot data using x
   x = list(
-    x = x,
-    y = y,
-    z = z,
-    geometry = make_geometry(build_dat$shape,
-                             build_dat$size / 150),
-    material = paste0("color: ", build_dat$colour),
+    points = apply(build_dat, 1, as.list),
     xlabels = scales$x.labels,
     xbreaks = scales::rescale(scales$x.major, from = c(0, 1), to = toscale),
     ylabels = scales$y.labels,

@@ -11,12 +11,10 @@ HTMLWidgets.widget({
 
     return {
       renderValue: function(x) {
+        ////////////////////TODO////////////////
+        // change attribute update to avoid overwriting other settings
         el.setAttribute('plot-area', {
-          x: x.x,
-          y: x.y,
-          z: x.z,
-          geometry: x.geometry,
-          material: x.material,
+          points: x.points,
           xlabels: x.xlabels,
           xbreaks: x.xbreaks,
           ylabels: x.ylabels,
@@ -38,7 +36,7 @@ HTMLWidgets.widget({
   }
 });
 
-Shiny.addCustomMessageHandler('updateChart', function(message){
+/*Shiny.addCustomMessageHandler('updateChart', function(message){
   chartEl = document.getElementById(message.id);
 
-});
+});*/
