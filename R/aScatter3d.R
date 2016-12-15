@@ -22,14 +22,17 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   # todo: make target scale mutable
   toscale <- c(-0.25, 0.25)
   # scale to the aframe plot area
-  build_dat$x <- scales::rescale(build_dat$x,
-                       from = scales$x.range, to = toscale)
-  build_dat$y <- scales::rescale(build_dat$y,
-                       from = scales$y.range, to = toscale)
-  build_dat$z <- scales::rescale(build_dat$z,
-                       from = scales$z.range, to = toscale);
+  build_dat$x <- round(
+    scales::rescale(build_dat$x, from = scales$x.range, to = toscale),
+    4)
+  build_dat$y <- round(
+    scales::rescale(build_dat$y, from = scales$y.range, to = toscale),
+    4)
+  build_dat$z <- round(
+    scales::rescale(buildz$data[[1]]$x, from = scales$z.range, to = toscale),
+    4)
   build_dat$geometry <- make_geometry(build_dat$shape,
-                                      build_dat$size / 150)
+                                      round(build_dat$size / 150, 4))
   build_dat$material <- paste0("color: ", build_dat$colour)
   build_dat <- build_dat[ , c("x", "y", "z", "geometry", "material")]
 
