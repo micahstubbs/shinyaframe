@@ -11,14 +11,16 @@ HTMLWidgets.widget({
 
     return {
       renderValue: function(x) {
-        ////////////////////TODO////////////////
-        // change attribute update to avoid overwriting other settings
+        // OK to overwite whole data object because all properties updated
         el.setAttribute('plot-area', {
           points: x.points,
+          xname: x.xname,
           xlabels: x.xlabels,
           xbreaks: x.xbreaks,
+          yname: x.yname,
           ylabels: x.ylabels,
           ybreaks: x.ybreaks,
+          zname: x.zname,
           zlabels: x.zlabels,
           zbreaks: x.zbreaks
         });
