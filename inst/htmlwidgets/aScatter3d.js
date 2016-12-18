@@ -25,12 +25,17 @@ HTMLWidgets.widget({
           zbreaks: x.zbreaks
         });
         mappingUpdate = function(evt) {
-          message = {
-            plot: el.id,
-            variable: evt.detail.dropped.components["data-frame-column"].data.name,
-            mapping: evt.detail.on.axis
-          };
-          Shiny.onInputChange("mappings", message);
+          var dataCol = evt.detail.dropped.components["data-frame-column"],
+              axis = evt.detail.on.axis;
+          // send message only when a data column is dropped on an axis receiver
+          if(dataCol && axis) {
+            message = {
+              plot: el.id,
+              variable: dataCol.data.name,
+              mapping: axis
+            };
+            Shiny.onInputChange("mappings", message);
+          }
         };
         el.parentEl.addEventListener('dropped', mappingUpdate);
       }
