@@ -28,11 +28,17 @@ aframeBox <- function(...) {
 }
 
 #' @export
+aframeOtherPrim <- function(prim = "entity", ...) {
+  htmltools::tag(paste0("a-", prim), list(...))
+}
+
+#' @export
 atags <- list(
   box = aframeBox,
   sphere = aframeSphere,
   entity = aframeEntity,
   mixin = aframeMixin,
   assets = aframeAssets,
-  scene = aframeScene
+  scene = aframeScene,
+  other = aframeOtherPrim
 )
