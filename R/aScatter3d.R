@@ -7,19 +7,47 @@
 #'
 #' @export
 aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
+  # ggobj comes through as null when there are no valid mappings
+  if(is.null(ggobj)) return();
   if(!is(ggobj, "gg")) stop("aScatter3d requires a ggplot object")
   build <- ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
+  # fill in any missing aesthetics with defaults (needed for geom_dotplot)
+  if(is.null(build_dat$shape)) build_dat$shape <- 1
+  if(is.null(build_dat$size)) build_dat$size <- 1.5
   # limits, breaks, and labels
   scales <- build$layout$panel_ranges[[1]]
-  # todo: add z scale
-  # inefficient hack: rebuild the plot with z in place of x
-  buildz <- ggplot_build(ggobj + ggplot2::aes_(x = ggobj$mapping$z))
-  scales$z.range <- buildz$layout$panel_ranges[[1]]$x.range
-  scales$z.labels <- buildz$layout$panel_ranges[[1]]$x.labels
-  scales$z.major <-  buildz$layout$panel_ranges[[1]]$x.major
-  # todo: make target scale mutable
+  # correct for dotplots
+  if(is.null(ggobj$mapping[['y']])) {
+    build_dat$y <- build_dat$y + build_dat$stackpos
+    yrange <- range(build_dat$y)
+    yrange <- yrange + diff(yrange) * 0.05 * c(-1, 1)
+    yscale <- scale_y_continuous()
+    yscale$train(yrange)
+    yscale <- yscale$break_info()
+    scales$y.major <- yscale$major
+    scales$y.labels = yscale$labels
+    scales$y.range <- yscale$range
+    ggobj$labels$y <- "Count"
+  }
+  if(is.null(build_dat$z)) {
+    # center if no z mapping
+    zdat <- 0.5
+    scales$z.range <- c(0,1)
+    scales$z.labels <- ""
+    scales$z.major <- 0.5
+    ggobj$labels$z <- ""
+  } else {
+    # todo: add z scale
+    # inefficient hack: rebuild the plot with z in place of x
+    buildz <- ggplot_build(ggobj + ggplot2::aes_(x = ggobj$mapping$z))
+    zdat <- buildz$data[[1]]$x
+    scales$z.range <- buildz$layout$panel_ranges[[1]]$x.range
+    scales$z.labels <- buildz$layout$panel_ranges[[1]]$x.labels
+    scales$z.major <-  buildz$layout$panel_ranges[[1]]$x.major
+  }
+  ################## todo: make target scale mutable
   toscale <- c(-0.25, 0.25)
   # scale to the aframe plot area
   build_dat$x <- round(
@@ -29,7 +57,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     scales::rescale(build_dat$y, from = scales$y.range, to = toscale),
     4)
   build_dat$z <- round(
-    scales::rescale(buildz$data[[1]]$x, from = scales$z.range, to = toscale),
+    scales::rescale(zdat, from = scales$z.range, to = toscale),
     4)
   build_dat$geometry <- make_geometry(build_dat$shape,
                                       round(build_dat$size / 150, 4))
