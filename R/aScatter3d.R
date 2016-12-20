@@ -95,16 +95,8 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   build_dat$geometry <- make_geometry(build_dat$shape, build_dat$size)
   build_dat$material <- paste0("color: ", build_dat$colour)
   build_dat <- build_dat[ , c("x", "y", "z", "geometry", "material")]
-
-  if (length(mapping_switch)) {
-    rename_key <- names(positionals) %>%
-      c(setdiff(all_positionals[c(2, 1, 3)], names(positionals))) %>%
-      setNames(all_positionals)
-    names(build_dat)[match(names(rename_key), names(build_dat))] <- rename_key
-  }
-  # forward plot data using x
-  x = list(
-    points = apply(build_dat, 1, as.list),
+  # forward plot data to javascript using msg object
+  msg = list(
     x = list(
       name = ggobj$labels$x,
       labels = scales$x.labels,
@@ -123,12 +115,19 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   )
   # reverse any mapping switcheroos done on incomplete mappings
   if (length(mapping_switch)) {
-    names(x)[match(names(rename_key), names(x))] <- rename_key
+    rename_key <- names(positionals) %>%
+      # reorder positionals here to have z-dotplots stack on y instead of x
+      c(setdiff(all_positionals[c(2, 1, 3)], names(positionals))) %>%
+      setNames(all_positionals)
+    names(build_dat)[match(names(rename_key), names(build_dat))] <- rename_key
+    names(msg)[match(names(rename_key), names(msg))] <- rename_key
   }
+  msg$points <- apply(build_dat, 1, as.list)
+
   # create widget
   htmlwidgets::createWidget(
     name = 'aScatter3d',
-    x,
+    msg,
     width = width,
     height = height,
     package = 'shinyaframe',
