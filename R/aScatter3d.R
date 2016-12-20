@@ -10,8 +10,23 @@
 aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   # ggobj comes through as null when there are no valid mappings
   #   TODO: clear the plot in this case
-  if(is.null(ggobj)) return()
-  if(!is(ggobj, "gg")) stop("aScatter3d requires a ggplot object")
+  if (is.null(ggobj)) return()
+  if (!is(ggobj, "gg")) stop("aScatter3d requires a ggplot object")
+  # verify positional mappings
+  positionals <- ggobj$mapping %>%
+    as.character() %>%
+    `[`(c("x", "y", "z")) %>%
+    na.omit()
+  if (length(positionals) == 0) return()
+  if (length(positionals) < 3) {
+    # make sure the mappings we do have go to positionals ggplot can use
+    old_mapping <- ggobj$mapping
+    mapping_switch <- positionals %>%
+      setNames(c("x", "y")[seq_along(.)]) %>%
+      as.list() %>%
+      do.call(what = ggplot2::aes_string)
+    ggobj <- ggobj + aes_(y = NULL, z = NULL) + mapping_switch
+  }
   build <- ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
