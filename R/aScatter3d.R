@@ -8,21 +8,37 @@
 #' @export
 aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   # ggobj comes through as null when there are no valid mappings
+  #   TODO: clear the plot in this case
   if(is.null(ggobj)) return();
   if(!is(ggobj, "gg")) stop("aScatter3d requires a ggplot object")
   build <- ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
   # fill in any missing aesthetics with defaults (needed for geom_dotplot)
-  if(is.null(build_dat$shape)) build_dat$shape <- 1
-  if(is.null(build_dat$size)) build_dat$size <- 1.5
+  if(is.null(build_dat$shape)) build_dat$shape <- plot_defaults$shape
+  if(is.null(build_dat$size)) {
+    build_dat$size <- plot_defaults$size
+  } else {
+    # convert to meter scale
+    build_dat$size <- round(build_dat$size / 150, 4)
+  }
   # limits, breaks, and labels
   scales <- build$layout$panel_ranges[[1]]
+  ################## todo: make target scale mutable
+  toscale <- c(-0.25, 0.25)
   # correct for dotplots
-  if(is.null(ggobj$mapping[['y']])) {
+  if (is.null(ggobj$mapping[['y']])) {
     build_dat$y <- build_dat$y + build_dat$stackpos
-    yrange <- range(build_dat$y)
-    yrange <- yrange + diff(yrange) * 0.05 * c(-1, 1)
+
+    if (max(build_dat$y) < diff(toscale) / plot_defaults$size) {
+      # if stacks don't fill the full area, expand the scale to keep the dots
+      # close together
+      yrange <- c(-0.05, diff(toscale) / plot_defaults$size / 2)
+    } else {
+      # otherwise scale to fit all the dots
+      yrange <- range(build_dat$y)
+      yrange <- yrange + diff(yrange) * 0.05 * c(-1, 1)
+    }
     yscale <- scale_y_continuous()
     yscale$train(yrange)
     yscale <- yscale$break_info()
@@ -47,8 +63,6 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     scales$z.labels <- buildz$layout$panel_ranges[[1]]$x.labels
     scales$z.major <-  buildz$layout$panel_ranges[[1]]$x.major
   }
-  ################## todo: make target scale mutable
-  toscale <- c(-0.25, 0.25)
   # scale to the aframe plot area
   build_dat$x <- round(
     scales::rescale(build_dat$x, from = scales$x.range, to = toscale),
@@ -59,8 +73,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   build_dat$z <- round(
     scales::rescale(zdat, from = scales$z.range, to = toscale),
     4)
-  build_dat$geometry <- make_geometry(build_dat$shape,
-                                      round(build_dat$size / 150, 4))
+  build_dat$geometry <- make_geometry(build_dat$shape, build_dat$size)
   build_dat$material <- paste0("color: ", build_dat$colour)
   build_dat <- build_dat[ , c("x", "y", "z", "geometry", "material")]
 

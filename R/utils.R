@@ -26,7 +26,10 @@ make_geometry <- function(g, s) {
 }
 
 
-
+plot_defaults <- list(
+  size = 0.01,
+  shape = 1
+)
 
 aEntity_html <- function(id, style, class, ...) {
   atags$entity(id = id, style = style, class = class, ...)
