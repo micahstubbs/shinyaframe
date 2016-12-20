@@ -98,15 +98,21 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   # forward plot data using x
   x = list(
     points = apply(build_dat, 1, as.list),
-    xname = ggobj$labels$x,
-    xlabels = scales$x.labels,
-    xbreaks = scales::rescale(scales$x.major, from = c(0, 1), to = toscale),
-    yname = ggobj$labels$y,
-    ylabels = scales$y.labels,
-    ybreaks = scales::rescale(scales$y.major, from = c(0, 1), to = toscale),
-    zname = ggobj$labels$z,
-    zlabels = scales$z.labels,
-    zbreaks = scales::rescale(scales$z.major, from = c(0, 1), to = toscale)
+    x = list(
+      name = ggobj$labels$x,
+      labels = scales$x.labels,
+      breaks = scales::rescale(scales$x.major, from = c(0, 1), to = toscale)
+    ),
+    y = list(
+      name = ggobj$labels$y,
+      labels = scales$y.labels,
+      breaks = scales::rescale(scales$y.major, from = c(0, 1), to = toscale)
+    ),
+    z = list(
+      name = ggobj$labels$z,
+      labels = scales$z.labels,
+      breaks = scales::rescale(scales$z.major, from = c(0, 1), to = toscale)
+    )
   )
 
   # create widget

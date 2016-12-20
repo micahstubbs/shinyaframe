@@ -10,19 +10,19 @@ HTMLWidgets.widget({
     var parentSet = false;
 
     return {
-      renderValue: function(x) {
+      renderValue: function(dat) {
         // OK to overwite whole data object because all properties updated
         el.setAttribute('plot-area', {
-          points: x.points,
-          xname: x.xname,
-          xlabels: x.xlabels,
-          xbreaks: x.xbreaks,
-          yname: x.yname,
-          ylabels: x.ylabels,
-          ybreaks: x.ybreaks,
-          zname: x.zname,
-          zlabels: x.zlabels,
-          zbreaks: x.zbreaks
+          points: dat.points,
+          xname: dat.x.name,
+          xlabels: dat.x.labels,
+          xbreaks: dat.x.breaks,
+          yname: dat.y.name,
+          ylabels: dat.y.labels,
+          ybreaks: dat.y.breaks,
+          zname: dat.z.name,
+          zlabels: dat.z.labels,
+          zbreaks: dat.z.breaks
         });
         mappingUpdate = function(evt) {
           var dataCol = evt.detail.dropped.components["data-frame-column"],
