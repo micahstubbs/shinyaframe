@@ -8,10 +8,6 @@
 #'
 #' @export
 aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
-  # ggobj comes through as null when there are no valid mappings
-  #   TODO: clear the plot in this case
-  if (is.null(ggobj)) return()
-  if (!is(ggobj, "gg")) stop("aScatter3d requires a ggplot object")
   # verify positional mappings
   all_positionals <- c("x", "y", "z")
   positionals <- ggobj$mapping %>%
@@ -19,7 +15,12 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     `[`(all_positionals) %>%
     na.omit()
   mapping_switch <- list()
-  if (length(positionals) == 0) return()
+  if (length(positionals) == 0) {
+    return(htmlwidgets::createWidget(
+        name = 'aScatter3d', 'empty', width = width, height = height,
+        package = 'shinyaframe', elementId = elementId
+    ))
+  }
   if (length(positionals) < 3) {
     # make sure the mappings we do have go to positionals ggplot can use
     mapping_switch <- positionals %>%

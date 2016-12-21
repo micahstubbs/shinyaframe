@@ -6,24 +6,40 @@ HTMLWidgets.widget({
 
   factory: function(el, width, height) {
 
-    var colliders = null;
-    var parentSet = false;
+    var emptyMessage = {
+      points: [],
+      xname: '',
+      xlabels: [],
+      xbreaks: [],
+      yname: '',
+      ylabels: [],
+      ybreaks: [],
+      zname: '',
+      zlabels: [],
+      zbreaks: []
+    };
 
     return {
       renderValue: function(dat) {
+        var msg;
+        if(dat === 'empty') {
+          msg = emptyMessage;
+        } else {
+          msg = {
+            points: dat.points,
+            xname: dat.x.name,
+            xlabels: dat.x.labels,
+            xbreaks: dat.x.breaks,
+            yname: dat.y.name,
+            ylabels: dat.y.labels,
+            ybreaks: dat.y.breaks,
+            zname: dat.z.name,
+            zlabels: dat.z.labels,
+            zbreaks: dat.z.breaks
+          };
+        }
         // OK to overwite whole data object because all properties updated
-        el.setAttribute('plot-area', {
-          points: dat.points,
-          xname: dat.x.name,
-          xlabels: dat.x.labels,
-          xbreaks: dat.x.breaks,
-          yname: dat.y.name,
-          ylabels: dat.y.labels,
-          ybreaks: dat.y.breaks,
-          zname: dat.z.name,
-          zlabels: dat.z.labels,
-          zbreaks: dat.z.breaks
-        });
+        el.setAttribute('plot-area', msg);
         mappingUpdate = function(evt) {
           var dataCol = evt.detail.dropped.components["data-frame-column"],
               axis = evt.detail.on.axis;
@@ -43,7 +59,3 @@ HTMLWidgets.widget({
   }
 });
 
-/*Shiny.addCustomMessageHandler('updateChart', function(message){
-  chartEl = document.getElementById(message.id);
-
-});*/
