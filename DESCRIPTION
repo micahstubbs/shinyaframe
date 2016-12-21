@@ -9,6 +9,8 @@ Description: Provides widgets to interface between Shiny and A-Frame, allowing
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    magrittr
 Depends:
     shiny
 Collate:
