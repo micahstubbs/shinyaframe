@@ -165,9 +165,15 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
 #' @name aScatter3d-shiny
 #'
 #' @export
-aScatter3dOutput <- function(outputId, width = '100%', height = '100%'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'aScatter3d',
-                                 width, height, package = 'shinyaframe')
+aScatter3dOutput <- function(outputId, width = '100%', height = '100%', ...){
+  html <- htmltools::tagList(atags$entity(
+    id = outputId,
+    class = "aScatter3d html-widget html-widget-output",
+    `plot-area` = "",
+    ...
+  ))
+  dependencies <- getDependency('aScatter3d', 'shinyaframe')
+  htmltools::attachDependencies(html, dependencies)
 }
 
 #' @rdname aScatter3d-shiny
