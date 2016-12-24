@@ -8,6 +8,7 @@
 #'
 #' @export
 aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
+  ggobj <- ggobj + scale_size(range = c(0.001, 0.015))
   # verify positional mappings
   all_positionals <- c("x", "y", "z")
   positionals <- ggobj$mapping %>%
@@ -29,7 +30,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
       do.call(what = ggplot2::aes_string)
     ggobj <- ggobj + aes_(y = NULL, z = NULL) + mapping_switch
   }
-  build <- ggplot_build(ggobj)
+  build <- ggplot2::ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
   # limits, breaks, and labels
@@ -78,9 +79,6 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   if(is.null(build_dat$shape)) build_dat$shape <- plot_defaults$shape
   if(is.null(build_dat$size)) {
     build_dat$size <- plot_defaults$size
-  } else {
-    # convert to meter scale
-    build_dat$size <- round(build_dat$size / 150, 4)
   }
 
   # scale to the aframe plot area
@@ -114,6 +112,20 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
       breaks = scales::rescale(scales$z.major, from = c(0, 1), to = toscale)
     )
   )
+  # extract legend info
+  for(scale in build$plot$scales$non_position_scales()$scales) {
+    mapping <- scale$aesthetics[1]
+    breaks <- scale$get_breaks()
+    valid_breaks <- !is.na(breaks)
+    msg[[mapping]] <- list(
+      name = ggobj$labels[[mapping]],
+      breaks = scale$map(breaks[valid_breaks]),
+      labels =  scale$get_labels()[valid_breaks]
+    )
+    if(mapping == "shape") {
+      msg[[mapping]]$breaks <- aframe_geom_scale(msg[[mapping]]$breaks)
+    }
+  }
   # reverse any mapping switcheroos done on incomplete mappings
   if (length(mapping_switch)) {
     rename_key <- names(positionals) %>%

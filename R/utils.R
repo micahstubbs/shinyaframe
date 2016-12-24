@@ -6,13 +6,14 @@ aframe_geom_scale <- function(x) {
   geoms[ (x - 1) %% length(geoms) + 1]
 }
 
+
 make_geometry <- function(g, s) {
   g <- aframe_geom_scale(g)
   prim <- paste0("primitive: ", g, "; ")
   sv <- data.frame(sphere = paste0("radius: ", s, "; "),
-             box = paste0("width: ", s, "; height: ", s,
-                          "; depth: ", s, "; "),
-             cone = paste0("height: ", s, "; radiusBottom: ", s,
+             box = paste0("width: ", s * 2, "; height: ", s * 2,
+                          "; depth: ", s * 2, "; "),
+             cone = paste0("height: ", s * 2, "; radiusBottom: ", s,
                            "; radiusTop: 0.001; "),
              dodecahedron = paste0("radius: ", s, "; "),
              torus = paste0("radius: ", s,
