@@ -29,7 +29,9 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
       do.call(what = ggplot2::aes_string)
     ggobj <- ggobj + aes_(y = NULL, z = NULL) + mapping_switch
   }
-  build <- ggplot_build(ggobj)
+  # set mapped size range to meter scale
+  ggobj <- ggobj + scale_size(range = c(0.001, 0.015))
+  build <- ggplot2::ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
   # limits, breaks, and labels
@@ -78,9 +80,6 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   if(is.null(build_dat$shape)) build_dat$shape <- plot_defaults$shape
   if(is.null(build_dat$size)) {
     build_dat$size <- plot_defaults$size
-  } else {
-    # convert to meter scale
-    build_dat$size <- round(build_dat$size / 150, 4)
   }
 
   # scale to the aframe plot area
@@ -114,6 +113,20 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
       breaks = scales::rescale(scales$z.major, from = c(0, 1), to = toscale)
     )
   )
+  # extract legend info
+  for(scale in build$plot$scales$non_position_scales()$scales) {
+    mapping <- scale$aesthetics[1]
+    breaks <- scale$get_breaks()
+    valid_breaks <- !is.na(breaks)
+    msg[[mapping]] <- list(
+      name = ggobj$labels[[mapping]],
+      breaks = scale$map(breaks[valid_breaks]),
+      labels =  scale$get_labels()[valid_breaks]
+    )
+    if(mapping == "shape") {
+      msg[[mapping]]$breaks <- aframe_geom_scale(msg[[mapping]]$breaks)
+    }
+  }
   # reverse any mapping switcheroos done on incomplete mappings
   if (length(mapping_switch)) {
     rename_key <- names(positionals) %>%
@@ -153,9 +166,15 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
 #' @name aScatter3d-shiny
 #'
 #' @export
-aScatter3dOutput <- function(outputId, width = '100%', height = '100%'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'aScatter3d',
-                                 width, height, package = 'shinyaframe')
+aScatter3dOutput <- function(outputId, width = '100%', height = '100%', ...){
+  html <- htmltools::tagList(atags$entity(
+    id = outputId,
+    class = "aScatter3d html-widget html-widget-output",
+    `plot-area` = "",
+    ...
+  ))
+  dependencies <- getDependency('aScatter3d', 'shinyaframe')
+  htmltools::attachDependencies(html, dependencies)
 }
 
 #' @rdname aScatter3d-shiny

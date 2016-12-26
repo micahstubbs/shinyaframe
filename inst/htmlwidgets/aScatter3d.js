@@ -16,16 +16,23 @@ HTMLWidgets.widget({
       ybreaks: [],
       zname: '',
       zlabels: [],
-      zbreaks: []
+      zbreaks: [],
+      colorname: '',
+      colorbreaks: [],
+      colorlabels: [],
+      shapename: '',
+      shapebreaks: [],
+      shapelabels: [],
+      sizename: '',
+      sizebreaks: [],
+      sizelabels: []
     };
 
     return {
       renderValue: function(dat) {
-        var msg;
-        if(dat === 'empty') {
-          msg = emptyMessage;
-        } else {
-          msg = {
+        var msg = AFRAME.utils.extend({}, emptyMessage);
+        if(dat !== 'empty') {
+          AFRAME.utils.extend(msg, {
             points: dat.points,
             xname: dat.x.name,
             xlabels: dat.x.labels,
@@ -36,10 +43,25 @@ HTMLWidgets.widget({
             zname: dat.z.name,
             zlabels: dat.z.labels,
             zbreaks: dat.z.breaks
-          };
+          });
         }
-        // OK to overwite whole data object because all properties updated
-        el.setAttribute('plot-area', msg);
+        if(dat.colour) {
+          msg.colorname = dat.colour.name;
+          msg.colorbreaks = dat.colour.breaks;
+          msg.colorlabels = dat.colour.labels;
+        }
+        if(dat.shape) {
+          msg.shapename = dat.shape.name;
+          msg.shapebreaks = dat.shape.breaks;
+          msg.shapelabels = dat.shape.labels;
+        }
+        if(dat.size) {
+          msg.sizename = dat.size.name;
+          msg.sizebreaks = dat.size.breaks;
+          msg.sizelabels = dat.size.labels;
+        }
+        el.setAttribute('plot',
+          AFRAME.utils.extend({}, el.getComputedAttribute('plot'), msg));
         mappingUpdate = function(evt) {
           var dataCol = evt.detail.dropped.components["data-frame-column"],
               axis = evt.detail.on.axis;
