@@ -78,7 +78,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
 
   # fill in any missing aesthetics with defaults (needed for geom_dotplot)
   if(is.null(build_dat$shape)) build_dat$shape <- plot_defaults$shape
-  if(is.null(build_dat$size)) {
+  if(is.null(build_dat$size) || is.null(ggobj$mapping$size)) {
     build_dat$size <- plot_defaults$size
   }
 
