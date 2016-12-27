@@ -30,7 +30,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     ggobj <- ggobj + aes_(y = NULL, z = NULL) + mapping_switch
   }
   # set mapped size range to meter scale
-  ggobj <- ggobj + scale_size(range = c(0.001, 0.015))
+  ggobj <- ggobj + scale_size(range = c(0.005, 0.015))
   build <- ggplot2::ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
