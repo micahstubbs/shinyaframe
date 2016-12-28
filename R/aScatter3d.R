@@ -11,9 +11,8 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   # verify positional mappings
   all_positionals <- c("x", "y", "z")
   positionals <- ggobj$mapping %>%
-    as.character() %>%
     `[`(all_positionals) %>%
-    na.omit()
+    Filter(f = function(x) !is.null(x))
   mapping_switch <- list()
   if (length(positionals) == 0) {
     return(htmlwidgets::createWidget(
@@ -24,9 +23,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   if (length(positionals) < 3) {
     # make sure the mappings we do have go to positionals ggplot can use
     mapping_switch <- positionals %>%
-      setNames(c("x", "y")[seq_along(.)]) %>%
-      as.list() %>%
-      do.call(what = ggplot2::aes_string)
+      setNames(c("x", "y")[seq_along(.)])
     ggobj <- ggobj + aes_(y = NULL, z = NULL) + mapping_switch
   }
   # set mapped size range to meter scale
