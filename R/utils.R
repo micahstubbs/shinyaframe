@@ -2,7 +2,8 @@
 
 aframe_geom_scale <- function(x) {
   x <- as.integer(factor(x))
-  geoms <- c("sphere", "box", "cone", "torus", "dodecahedron")
+  geoms <- c("sphere", "box", "cone", "octahedron", "tetrahedron", "cylinder",
+             "torus", "torusKnot", "dodecahedron")
   geoms[ (x - 1) %% length(geoms) + 1]
 }
 
@@ -15,9 +16,14 @@ make_geometry <- function(g, s) {
                           "; depth: ", s * 2, "; "),
              cone = paste0("height: ", s * 2, "; radiusBottom: ", s,
                            "; radiusTop: 0.001; "),
+             octahedron = paste0("radius: ", s, "; "),
+             torus = paste0("radius: ", s * 0.75,
+                            "; radiusTubular: ", s * 0.15, "; "),
+             tetrahedron = paste0("radius: ", s, "; "),
              dodecahedron = paste0("radius: ", s, "; "),
-             torus = paste0("radius: ", s,
-                            "; radiusTubular: ", as.numeric(s) / 5, "; "),
+             cylinder = paste0("radius: ", s, "; height: ", s * 2, "; "),
+             torusKnot = paste0("radius: ", s * 0.6,
+                                "; radiusTubular: ", s * 0.15, "; "),
              stringsAsFactors = FALSE
   )
   if (length(s) == 1 || length(g) == 1) {

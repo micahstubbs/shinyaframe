@@ -28,6 +28,24 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   }
   # set mapped size range to meter scale
   ggobj <- ggobj + scale_size(range = c(0.005, 0.015))
+  # categorize shape scale if numeric
+  shape_var <- as.character(ggobj$mapping$shape)
+  if(length(shape_var)) {
+    if(is.numeric(ggobj$data[[shape_var]])) {
+      shape_cat <- Hmisc::cut2(ggobj$data[[shape_var]], g = 6)
+      # drop inclusive/exclusive indicators because they are ugly
+      levels(shape_cat) <- gsub("^[\\(\\[]|[\\)\\]]$", "", levels(shape_cat))
+      ggobj$data[[shape_var]] <- shape_cat
+    }
+    # convert any other shape variable types (e.g. character) to factor
+    ggobj$data[[shape_var]] <-
+      as.factor(ggobj$data[[shape_var]])
+    # manually scale shape because ggplot's auto shape scale will
+    # reject scaling when more than 6 levels
+    ggobj <- ggobj + scale_shape_manual(
+      values = seq_along(levels(ggobj$data[[shape_var]]))
+    )
+  }
   build <- ggplot2::ggplot_build(ggobj)
   # scaled data
   build_dat <- build$data[[1]]
