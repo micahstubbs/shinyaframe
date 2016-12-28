@@ -31,19 +31,25 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
   # categorize shape scale if numeric
   shape_var <- as.character(ggobj$mapping$shape)
   if(length(shape_var)) {
-    if(is.numeric(ggobj$data[[shape_var]])) {
-      shape_cat <- Hmisc::cut2(ggobj$data[[shape_var]], g = 6)
+    # create new variable to avoid modifying other scales if this variable
+    # is mapped to multiple aesthetics
+    ggobj$data$shape_mod <- ggobj$data[[shape_var]]
+    ggobj <- ggobj + aes(shape = shape_mod)
+    if(is.numeric(ggobj$data$shape_mod)) {
+      ggobj$data$shape_mod <- Hmisc::cut2(ggobj$data$shape_mod,
+                                          g = 6, digits = 2)
       # drop inclusive/exclusive indicators because they are ugly
-      levels(shape_cat) <- gsub("^[\\(\\[]|[\\)\\]]$", "", levels(shape_cat))
-      ggobj$data[[shape_var]] <- shape_cat
+      levels(ggobj$data$shape_mod) %>%
+        gsub("^[\\(\\[]|(\\)|\\])$", "", .) %>%
+        gsub(",", " to ", .) ->
+        levels(ggobj$data$shape_mod)
     }
     # convert any other shape variable types (e.g. character) to factor
-    ggobj$data[[shape_var]] <-
-      as.factor(ggobj$data[[shape_var]])
+    ggobj$data$shape_mod <- as.factor(ggobj$data$shape_mod)
     # manually scale shape because ggplot's auto shape scale will
     # reject scaling when more than 6 levels
     ggobj <- ggobj + scale_shape_manual(
-      values = seq_along(levels(ggobj$data[[shape_var]]))
+      values = seq_along(levels(ggobj$data$shape_mod))
     )
   }
   build <- ggplot2::ggplot_build(ggobj)
@@ -140,6 +146,8 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     )
     if(mapping == "shape") {
       msg[[mapping]]$breaks <- aframe_geom_scale(msg[[mapping]]$breaks)
+      # correct for altering of shape variable earlier
+      msg[[mapping]]$name <- shape_var
     }
   }
   # reverse any mapping switcheroos done on incomplete mappings
