@@ -35,6 +35,7 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     # is mapped to multiple aesthetics
     ggobj$data$shape_mod <- ggobj$data[[shape_var]]
     ggobj <- ggobj + aes(shape = shape_mod)
+    ggobj$labels$shape = shape_var
     if(is.numeric(ggobj$data$shape_mod)) {
       ggobj$data$shape_mod <- Hmisc::cut2(ggobj$data$shape_mod,
                                           g = 6, digits = 2)
@@ -49,7 +50,8 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     # manually scale shape because ggplot's auto shape scale will
     # reject scaling when more than 6 levels
     ggobj <- ggobj + scale_shape_manual(
-      values = seq_along(levels(ggobj$data$shape_mod))
+      values = setNames(aframe_geom_scale(levels(ggobj$data$shape_mod)),
+                        levels(ggobj$data$shape_mod))
     )
   }
   build <- ggplot2::ggplot_build(ggobj)
@@ -97,8 +99,10 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     scales$z.major <-  buildz$layout$panel_ranges[[1]]$x.major
   }
 
-  # fill in any missing aesthetics with defaults (needed for geom_dotplot)
-  if(is.null(build_dat$shape)) build_dat$shape <- plot_defaults$shape
+  # fill in any missing aesthetics with aframe suitable defaults
+  if(is.null(build_dat$shape) || is.null(ggobj$mapping$shape)) {
+    build_dat$shape <- plot_defaults$shape
+  }
   if(is.null(build_dat$size) || is.null(ggobj$mapping$size)) {
     build_dat$size <- plot_defaults$size
   }
@@ -144,11 +148,6 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
       breaks = scale$map(breaks[valid_breaks]),
       labels =  scale$get_labels()[valid_breaks]
     )
-    if(mapping == "shape") {
-      msg[[mapping]]$breaks <- aframe_geom_scale(msg[[mapping]]$breaks)
-      # correct for altering of shape variable earlier
-      msg[[mapping]]$name <- shape_var
-    }
   }
   # reverse any mapping switcheroos done on incomplete mappings
   if (length(mapping_switch)) {

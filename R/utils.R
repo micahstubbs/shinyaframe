@@ -9,7 +9,6 @@ aframe_geom_scale <- function(x) {
 
 
 make_geometry <- function(g, s) {
-  g <- aframe_geom_scale(g)
   prim <- paste0("primitive: ", g, "; ")
   sv <- data.frame(sphere = paste0("radius: ", s, "; "),
              box = paste0("width: ", s * 2, "; height: ", s * 2,
@@ -35,7 +34,7 @@ make_geometry <- function(g, s) {
 
 plot_defaults <- list(
   size = 0.01,
-  shape = 1
+  shape = "sphere"
 )
 
 aEntity_html <- function(id, style, class, ...) {
