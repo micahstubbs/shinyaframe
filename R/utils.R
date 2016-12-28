@@ -34,7 +34,9 @@ make_geometry <- function(g, s) {
 
 plot_defaults <- list(
   size = 0.01,
-  shape = "sphere"
+  shape = "sphere",
+  size_min = 0.005,
+  size_max = 0.015
 )
 
 aEntity_html <- function(id, style, class, ...) {

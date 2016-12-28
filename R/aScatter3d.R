@@ -27,10 +27,19 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     ggobj <- ggobj + aes_(y = NULL, z = NULL) + mapping_switch
   }
   # set mapped size range to meter scale
-  ggobj <- ggobj + scale_size(range = c(0.005, 0.015))
+  size_var <- as.character(ggobj$mapping$size)
+  if (length(size_var) && !is.numeric(ggobj$data[[size_var]])) {
+    numLevels <-  length(unique(ggobj$data[[size_var]]))
+    ggobj <- ggobj + scale_size_manual(values = seq(plot_defaults$size_min,
+                                                    plot_defaults$size_max,
+                                                    length.out = numLevels))
+  } else {
+    ggobj <- ggobj + scale_size(range = c(plot_defaults$size_min,
+                                          plot_defaults$size_max))
+  }
   # categorize shape scale if numeric
   shape_var <- as.character(ggobj$mapping$shape)
-  if(length(shape_var)) {
+  if (length(shape_var)) {
     # create new variable to avoid modifying other scales if this variable
     # is mapped to multiple aesthetics
     ggobj$data$shape_mod <- ggobj$data[[shape_var]]
