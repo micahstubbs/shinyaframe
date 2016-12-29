@@ -1,7 +1,13 @@
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 aframe_geom_scale <- function(x) {
-  x <- as.integer(factor(x))
+  # conver to factor id, preserve ordering
+  if(is.factor(x)) {
+    x <- as.integer(x)
+  } else {
+    x <- match(x, unique(x))
+  }
+
   geoms <- c("sphere", "box", "cone", "octahedron", "tetrahedron", "cylinder",
              "torus", "torusKnot", "dodecahedron")
   geoms[ (x - 1) %% length(geoms) + 1]
