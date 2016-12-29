@@ -127,8 +127,10 @@ aScatter3d <- function(ggobj, width = NULL, height = NULL, elementId = NULL) {
     scales::rescale(zdat, from = scales$z.range, to = toscale),
     4)
   build_dat$geometry <- make_geometry(build_dat$shape, build_dat$size)
-  build_dat$material <- paste0("color: ", build_dat$colour)
-  build_dat <- build_dat[ , c("x", "y", "z", "geometry", "material")]
+  names(build_dat)[names(build_dat) == "colour"] <- "color"
+  build_dat$color <- ifelse(build_dat$color == "black",
+                            "#000000", build_dat$color)
+  build_dat <- build_dat[ , c("x", "y", "z", "geometry", "color")]
   # forward plot data to javascript using msg object
   msg = list(
     x = list(
