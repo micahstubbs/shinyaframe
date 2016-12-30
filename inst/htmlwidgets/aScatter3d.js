@@ -60,8 +60,9 @@ HTMLWidgets.widget({
           msg.sizebreaks = dat.size.breaks;
           msg.sizelabels = dat.size.labels;
         }
-        el.setAttribute('plot',
-          AFRAME.utils.extend({}, el.getAttribute('plot'), msg));
+        // is this why mappings sometimes persist when data source is changed?
+        // gh #4
+        el.setAttribute('plot', msg);
         mappingUpdate = function(evt) {
           var dataCol = evt.detail.dropped.components["data-frame-column"],
               axis = evt.detail.on.axis;
