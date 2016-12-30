@@ -1,7 +1,7 @@
 # (uncomment to add a dependency)
 dependencies:
   - name: aframe
-    version: 0.3.2
+    version: 0.4.0
     src: htmlwidgets/aframe
     script: aframe.js
 
