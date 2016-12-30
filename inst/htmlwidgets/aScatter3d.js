@@ -61,7 +61,7 @@ HTMLWidgets.widget({
           msg.sizelabels = dat.size.labels;
         }
         el.setAttribute('plot',
-          AFRAME.utils.extend({}, el.getComputedAttribute('plot'), msg));
+          AFRAME.utils.extend({}, el.getAttribute('plot'), msg));
         mappingUpdate = function(evt) {
           var dataCol = evt.detail.dropped.components["data-frame-column"],
               axis = evt.detail.on.axis;
