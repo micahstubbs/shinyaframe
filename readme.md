@@ -8,3 +8,12 @@ exploration.
 
 It is an early work in progress and an example shiny app can be found at
 http://github.com./wmurphyrd/adit
+
+#### install
+
+in the R Console:
+
+```R
+library(devtools)
+install_github("wmurphyrd/shinyaframe")
+```
