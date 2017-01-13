@@ -9,7 +9,7 @@ exploration.
 It is an early work in progress and an example shiny app can be found at
 http://github.com./wmurphyrd/adit
 
-#### install
+#### to install the shinyaframe R package
 
 in the R Console:
 
